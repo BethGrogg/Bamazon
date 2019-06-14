@@ -40,22 +40,69 @@ function returnList() {
 
       switch (answers.toDo) {
           case ('View Products for Sale'):
-          console.log("in 1");
-          break;
-
+              viewProducts();
+              break;
           case ('View Low Inventory'):
-              console.log("in 2");
+              viewLowInventory();
               break;
           case ('Add to Inventory'):
-              console.log("in 3");
+              addToInventory();
               break;
           case ('Add New Product'):
-              console.log("in 4");
+              addNewProduct();
               break;
           default:
               console.log("not working");
               break;        
       }
     });
-connection.end();
+
+};
+
+function viewProducts() {
+
+    connection.query("SELECT * FROM products", function (err, res) {
+       
+        if (err) throw err;
+        
+        displayTable(res);
+        connection.end();
+
+
+        });
+};
+
+function viewLowInventory() {
+
+    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, res) {
+
+        if (err) throw err;
+        displayTable(res);
+        connection.end();
+    })
+};
+
+function displayTable(res) {
+    var displayTable = new table ({
+        head: ["Item ID", "Product Name", "Category", "Price", "Quantity"],
+        colWidths: [10,25,25,10,14]
+    });
+    for(var i = 0; i < res.length; i++){
+        displayTable.push(
+            [res[i].item_id,res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]
+            );
+    }
+    console.log(displayTable.toString());
+};
+
+function addToInventory() {
+
+
+    connection.end();
+};
+
+function addNewProduct() {
+
+
+    connection.end();
 };
