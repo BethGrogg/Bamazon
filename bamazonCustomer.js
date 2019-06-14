@@ -52,11 +52,11 @@ function customerBuy() {
 
 
 
-        connection.query("SELECT stock_quantity FROM products WHERE item_id = ?", answers.product, function (err, res) {
+        connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
             
             if (err) throw err;
         
-            if (answers.amount <= tableData.stock_quantity) {
+            if (answers.amount <= res[0].stock_quantity) {
                 console.log("Good news! Your item is in stock!");
                 var queryString = "UPDATE products SET stock_quantity = stock_quantity -  " + answers.amount + " WHERE item_id = " + answers.product;
                 
@@ -64,8 +64,8 @@ function customerBuy() {
                 if (err) throw err;
                 
                 })
-                var totalPrice = answers.amount * tableData.price;
-                console.log("The cost of your purchase for " + answers.amount + " " + tableData.product_name+ " is " + totalPrice);
+                var totalPrice = answers.amount * res[0].price;
+                console.log("The cost of your purchase for " + answers.amount + " " + res[0].product_name+ " is " + totalPrice);
             } else {
                 console.log("Sorry, insufficient stock at this time.")
             };
