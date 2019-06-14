@@ -95,14 +95,90 @@ function displayTable(res) {
     console.log(displayTable.toString());
 };
 
+
+
 function addToInventory() {
+    var question = [{
+        type: 'input',
+        name: 'product',
+        message: "What item would you like to add inventory to (item_id)?"
+    },
+    {
+        type: 'input',
+        name: 'amount',
+        message: "How many units of this item would you like to add?"
+    }
+
+];
 
 
-    connection.end();
+inquirer.prompt(question).then(answers => {
+
+
+
+    connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
+        
+        if (err) throw err;
+    
+            var queryString = "UPDATE products SET stock_quantity = stock_quantity +  " + answers.amount + " WHERE item_id = " + answers.product;
+            
+            connection.query(queryString, function (err, res) {
+            if (err) throw err;
+             console.log("Item " +answers.product+" has been updated!");
+             connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
+        
+                if (err) throw err;
+             displayTable(res);
+             });
+
+        connection.end();
+    });
+});
+
+
+
+});
 };
 
 function addNewProduct() {
+    var question = [{
+        type: 'input',
+        name: 'product',
+        message: "What item would you like to add?"
+    },
+    {
+        type: 'input',
+        name: 'department',
+        message: "What department does this item belong in?"
+    },
+    {
+        type: 'input',
+        name: 'price',
+        message: "How much does this item cost?"
+    },
+    {
+        type: 'input',
+        name: 'amount',
+        message: "How many units of this item would you like to add?"
+    }
+
+];
+inquirer.prompt(question).then(answers => {
 
 
-    connection.end();
+    connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + answers.product + "', '" + answers.department + "', " + answers.price + ", " + answers.amount + ")", function (err, res) {
+        
+        if (err) throw err;
+    
+       
+            connection.query("SELECT * FROM products", function (err, res) {
+            displayTable(res);
+            if (err) throw err;
+            
+            });
+            
+            connection.end();
+       
+    });
+});
 };
