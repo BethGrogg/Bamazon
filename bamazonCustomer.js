@@ -14,50 +14,63 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     returnProducts();
-    
-    
-    
+
+
+
 });
 
 
 function returnProducts() {
-    connection.query("SELECT item_id, product_name, price FROM products", function(err, res) {
+    connection.query("SELECT item_id, product_name, price FROM products", function (err, res) {
+       
         if (err) throw err;
         console.log(res);
-    
-        
+
+
         customerBuy();
-     //   connection.end();
+        //   connection.end();
     });
 };
 
 function customerBuy() {
-  
-    var question = [
-        {
-          type: 'input',
-          name: 'product',
-          message: "What item would you like to buy (input item_id)?"
+
+    var question = [{
+            type: 'input',
+            name: 'product',
+            message: "What item would you like to buy (input item_id)?"
         },
         {
-          type: 'input',
-          name: 'amount',
-          message: "How many units of this item would you like to buy?"
+            type: 'input',
+            name: 'amount',
+            message: "How many units of this item would you like to buy?"
         }
-        
-      ];
-    
-    
-      inquirer.prompt(question).then(answers => {
-        console.log("Answers: " + answers.product);
-        console.log("Amount: " + answers.amount);
-       
-              
 
-    connection.query("SELECT stock_quantity FROM products WHERE item_id = ?", answers.product, function(err, res) {
-        if (err) throw err;
-        console.log(res);
-        connection.end();
-      });
+    ];
+
+
+    inquirer.prompt(question).then(answers => {
+
+
+
+        connection.query("SELECT stock_quantity FROM products WHERE item_id = ?", answers.product, function (err, res) {
+            
+            if (err) throw err;
+        
+            if (answers.amount <= tableData.stock_quantity) {
+                console.log("Good news! Your item is in stock!");
+                var queryString = "UPDATE products SET stock_quantity = stock_quantity -  " + answers.amount + " WHERE item_id = " + answers.product;
+                
+                connection.query(queryString, function (err, res) {
+                if (err) throw err;
+                
+                })
+                var totalPrice = answers.amount * tableData.price;
+                console.log("The cost of your purchase for " + answers.amount + " " + tableData.product_name+ " is " + totalPrice);
+            } else {
+                console.log("Sorry, insufficient stock at this time.")
+            };
+
+            connection.end();
+        });
     });
 };
