@@ -84,12 +84,15 @@ function viewLowInventory() {
 
 function displayTable(res) {
     var displayTable = new table ({
-        head: ["Item ID", "Product Name", "Category", "Price", "Quantity"],
-        colWidths: [10,25,25,10,14]
+        head: ["Item ID", "Product Name", "Category", "Price", "Quantity", "Product Sales"],
+        colWidths: [10,25,25,10,14,10]
     });
     for(var i = 0; i < res.length; i++){
+        if (res[i].product_sales === null) {
+            res[i].product_sales = 0;
+        };
         displayTable.push(
-            [res[i].item_id,res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]
+            [res[i].item_id,res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity, res[i].product_sales]
             );
     }
     console.log(displayTable.toString());
