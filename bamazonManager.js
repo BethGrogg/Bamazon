@@ -20,58 +20,59 @@ connection.connect(function (err) {
 
 });
 
+//This function allows the manager to choose what they would like to do.  They choose an option from a list.
 function returnList() {
     inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'toDo',
-        message: 'What would you like to do?',
-        choices: [
-          'View Products for Sale',
-          'View Low Inventory',
-          'Add to Inventory',
-          'Add New Product'
-        ]
-      }
-    ])
-    .then(answers => {
-      console.log(JSON.stringify(answers, null, '  '));
+        .prompt([{
+            type: 'list',
+            name: 'toDo',
+            message: 'What would you like to do?',
+            choices: [
+                'View Products for Sale',
+                'View Low Inventory',
+                'Add to Inventory',
+                'Add New Product'
+            ]
+        }])
+        .then(answers => {
+            console.log(JSON.stringify(answers, null, '  '));
 
-      switch (answers.toDo) {
-          case ('View Products for Sale'):
-              viewProducts();
-              break;
-          case ('View Low Inventory'):
-              viewLowInventory();
-              break;
-          case ('Add to Inventory'):
-              addToInventory();
-              break;
-          case ('Add New Product'):
-              addNewProduct();
-              break;
-          default:
-              console.log("not working");
-              break;        
-      }
-    });
+            switch (answers.toDo) {
+                case ('View Products for Sale'):
+                    viewProducts();
+                    break;
+                case ('View Low Inventory'):
+                    viewLowInventory();
+                    break;
+                case ('Add to Inventory'):
+                    addToInventory();
+                    break;
+                case ('Add New Product'):
+                    addNewProduct();
+                    break;
+                default:
+                    console.log("not working");
+                    break;
+            }
+        });
 
 };
 
+//Allows the manager to see all of the product inventory.
 function viewProducts() {
 
     connection.query("SELECT * FROM products", function (err, res) {
-       
+
         if (err) throw err;
-        
+
         displayTable(res);
         connection.end();
 
 
-        });
+    });
 };
 
+//Allows the user to check for low inventory where the quantity is less than 5.
 function viewLowInventory() {
 
     connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, res) {
@@ -82,106 +83,108 @@ function viewLowInventory() {
     })
 };
 
+//Function to display the table.  This utilizes cli-table to format the table.
 function displayTable(res) {
-    var displayTable = new table ({
+    var displayTable = new table({
         head: ["Item ID", "Product Name", "Category", "Price", "Quantity", "Product Sales"],
-        colWidths: [10,25,25,10,14,10]
+        colWidths: [10, 25, 25, 10, 14, 10]
     });
-    for(var i = 0; i < res.length; i++){
+    for (var i = 0; i < res.length; i++) {
         if (res[i].product_sales === null) {
             res[i].product_sales = 0;
         };
         displayTable.push(
-            [res[i].item_id,res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity, res[i].product_sales]
-            );
+            [res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity, res[i].product_sales]
+        );
     }
     console.log(displayTable.toString());
 };
 
 
-
+//Allows the manager to add inventory.
 function addToInventory() {
     var question = [{
-        type: 'input',
-        name: 'product',
-        message: "What item would you like to add inventory to (item_id)?"
-    },
-    {
-        type: 'input',
-        name: 'amount',
-        message: "How many units of this item would you like to add?"
-    }
+            type: 'input',
+            name: 'product',
+            message: "What item would you like to add inventory to (item_id)?"
+        },
+        {
+            type: 'input',
+            name: 'amount',
+            message: "How many units of this item would you like to add?"
+        }
 
-];
-
-
-inquirer.prompt(question).then(answers => {
+    ];
 
 
+    inquirer.prompt(question).then(answers => {
 
-    connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
-        
-        if (err) throw err;
-    
-            var queryString = "UPDATE products SET stock_quantity = stock_quantity +  " + answers.amount + " WHERE item_id = " + answers.product;
-            
-            connection.query(queryString, function (err, res) {
+
+
+        connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
+
             if (err) throw err;
-             console.log("Item " +answers.product+" has been updated!");
-             connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
-        
+
+            var queryString = "UPDATE products SET stock_quantity = stock_quantity +  " + answers.amount + " WHERE item_id = " + answers.product;
+
+            connection.query(queryString, function (err, res) {
                 if (err) throw err;
-             displayTable(res);
-             });
+                console.log("Item " + answers.product + " has been updated!");
+                connection.query("SELECT * FROM products WHERE item_id = ?", answers.product, function (err, res) {
 
-        connection.end();
+                    if (err) throw err;
+                    displayTable(res);
+                });
+
+                connection.end();
+            });
+        });
+
+
+
     });
-});
-
-
-
-});
 };
 
+//Allows the manager to add new product to the inventory.
 function addNewProduct() {
     var question = [{
-        type: 'input',
-        name: 'product',
-        message: "What item would you like to add?"
-    },
-    {
-        type: 'input',
-        name: 'department',
-        message: "What department does this item belong in?"
-    },
-    {
-        type: 'input',
-        name: 'price',
-        message: "How much does this item cost?"
-    },
-    {
-        type: 'input',
-        name: 'amount',
-        message: "How many units of this item would you like to add?"
-    }
+            type: 'input',
+            name: 'product',
+            message: "What item would you like to add?"
+        },
+        {
+            type: 'input',
+            name: 'department',
+            message: "What department does this item belong in?"
+        },
+        {
+            type: 'input',
+            name: 'price',
+            message: "How much does this item cost?"
+        },
+        {
+            type: 'input',
+            name: 'amount',
+            message: "How many units of this item would you like to add?"
+        }
 
-];
-inquirer.prompt(question).then(answers => {
+    ];
+    inquirer.prompt(question).then(answers => {
 
 
-    connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + answers.product + "', '" + answers.department + "', " + answers.price + ", " + answers.amount + ")", function (err, res) {
-        
-        if (err) throw err;
-    
-       
-            connection.query("SELECT * FROM products", function (err, res) {
-            displayTable(res);
+        connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + answers.product + "', '" + answers.department + "', " + answers.price + ", " + answers.amount + ")", function (err, res) {
+
             if (err) throw err;
-            
+
+
+            connection.query("SELECT * FROM products", function (err, res) {
+                displayTable(res);
+                if (err) throw err;
+
             });
-            
+
             connection.end();
-       
+
+        });
     });
-});
 };

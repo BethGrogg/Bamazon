@@ -20,114 +20,115 @@ connection.connect(function (err) {
 
 });
 
-
+//Displays options for the Supervisor to choose to do.
 function returnList() {
     inquirer
-    .prompt([
-      {
-        type: 'list',
-        name: 'toDo',
-        message: 'What would you like to do?',
-        choices: [
-          'View Product Sales by Department',
-          'Create New Department'
-          
-        ]
-      }
-    ])
-    .then(answers => {
-      console.log(JSON.stringify(answers, null, '  '));
+        .prompt([{
+            type: 'list',
+            name: 'toDo',
+            message: 'What would you like to do?',
+            choices: [
+                'View Product Sales by Department',
+                'Create New Department'
 
-      switch (answers.toDo) {
-          case ('View Product Sales by Department'):
-              viewSalesByDept();
-              break;
-          case ('Create New Department'):
-              createNewDept();
-              break;
-          default:
-              console.log("not working");
-              break;        
-      }
-    });
+            ]
+        }])
+        .then(answers => {
+            console.log(JSON.stringify(answers, null, '  '));
+
+            switch (answers.toDo) {
+                case ('View Product Sales by Department'):
+                    viewSalesByDept();
+                    break;
+                case ('Create New Department'):
+                    createNewDept();
+                    break;
+                default:
+                    console.log("not working");
+                    break;
+            }
+        });
 
 };
 
+//Allows the Supervisor to check on sales for the different departments.  This function utilizes both the products
+//and departments tables. 
 function viewSalesByDept() {
 
-    connection.query("SELECT departments.department_id, departments.department_name, departments.over_head_costs, sum(products.product_sales) AS product_sales, product_sales - departments.over_head_costs AS total_profit FROM products JOIN departments USING (department_name) GROUP BY departments.department_name", function(err, res) {
-      
+    connection.query("SELECT departments.department_id, departments.department_name, departments.over_head_costs, sum(products.product_sales) AS product_sales, product_sales - departments.over_head_costs AS total_profit FROM products JOIN departments USING (department_name) GROUP BY departments.department_name", function (err, res) {
+
         if (err) throw err;
 
-        var displayTable = new table ({
+        var displayTable = new table({
             head: ["Department ID", "Department Name", "Over Head Costs", "Product Sales", "Total Profit"],
-            colWidths: [10,25,25,10,14]
+            colWidths: [10, 25, 25, 10, 14]
         });
-        
-        for(var i = 0; i < res.length; i++){
+
+        for (var i = 0; i < res.length; i++) {
             if (res[i].product_sales === null) {
                 res[i].product_sales = 0;
             };
             if (res[i].total_profit === null) {
                 res[i].total_profit = 0;
             };
-            
-            
+
+
             displayTable.push(
-                [res[i].department_id,res[i].department_name, res[i].over_head_costs, res[i].product_sales, res[i].total_profit]
-                );
+                [res[i].department_id, res[i].department_name, res[i].over_head_costs, res[i].product_sales, res[i].total_profit]
+            );
         }
         console.log(displayTable.toString());
-        
+
     });
 
 
-connection.end();
+    connection.end();
 
 
 };
 
+//Allows the Supervisor to create a new department.
 function createNewDept() {
     var question = [{
-        type: 'input',
-        name: 'department',
-        message: "What department would you like to add?"
-    },
-    {
-        type: 'input',
-        name: 'amount',
-        message: "What is the over head cost for this department?"
-    }
+            type: 'input',
+            name: 'department',
+            message: "What department would you like to add?"
+        },
+        {
+            type: 'input',
+            name: 'amount',
+            message: "What is the over head cost for this department?"
+        }
 
-];
-
-
-inquirer.prompt(question).then(answers => {
+    ];
 
 
+    inquirer.prompt(question).then(answers => {
 
-    connection.query("INSERT INTO departments (department_name, over_head_costs) VALUES ('" + answers.department + "', " + answers.amount + ")", function (err, res) {
-        
-        if (err) throw err;
-        connection.query("SELECT * FROM departments", function (err, res) {
+
+
+        connection.query("INSERT INTO departments (department_name, over_head_costs) VALUES ('" + answers.department + "', " + answers.amount + ")", function (err, res) {
+
             if (err) throw err;
-       
-        var displayTable = new table ({
-            head: ["Department ID", "Department Name", "Over Head Costs"],
-            colWidths: [10,25,25]
-        });
-        
-        for(var i = 0; i < res.length; i++){
-           
-            
-            displayTable.push(
-                [res[i].department_id,res[i].department_name, res[i].over_head_costs]
-                );
-        };
-        console.log(displayTable.toString());
-    });
-        connection.end();
-});
+            connection.query("SELECT * FROM departments", function (err, res) {
+                if (err) throw err;
 
-});
+                var displayTable = new table({
+                    head: ["Department ID", "Department Name", "Over Head Costs"],
+                    colWidths: [10, 25, 25]
+                });
+
+                for (var i = 0; i < res.length; i++) {
+
+
+                    displayTable.push(
+                        [res[i].department_id, res[i].department_name, res[i].over_head_costs]
+                    );
+                };
+                console.log(displayTable.toString());
+            });
+            connection.end();
+        });
+
+    });
 };
