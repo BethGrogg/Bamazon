@@ -20,28 +20,28 @@ Screenshots of Manager tasks.
 
 View Products for Sale:
 
-![Bamazon Manager 2](./Screenshot (23).png)
+![Bamazon Manager 2](/Screenshot (23).png)
 
 View Low Inventory:
 
-![Bamazon Manager 3](./Screenshot (24).png)
+![Bamazon Manager 3](/Screenshot (24).png)
 
 Add to Inventory:
 
-![Bamazon Manager 4](./Screenshot (25).png)
+![Bamazon Manager 4](/Screenshot (25).png)
 
 Add New Product:
 
-![Bamazon Manager 5](./Screenshot (26).png)
+![Bamazon Manager 5](/Screenshot (26).png)
 
 Supervisors have 2 choices of tasks they can do.
 
-![Bamazon Supervisor 1](./Screenshot (31).png)
+![Bamazon Supervisor 1](/Screenshot (31).png)
 
 View Product Sales By Department:
 
-![Bamazon Supervisor 2](./Screenshot (28).png)
+![Bamazon Supervisor 2](/Screenshot (28).png)
 
 Create New Department:
 
-![Bamazon Supervisor 3](./Screenshot (29).png)
+![Bamazon Supervisor 3](/Screenshot (29).png)
