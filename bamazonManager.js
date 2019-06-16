@@ -35,7 +35,7 @@ function returnList() {
             ]
         }])
         .then(answers => {
-            console.log(JSON.stringify(answers, null, '  '));
+         //   console.log(JSON.stringify(answers, null, '  '));
 
             switch (answers.toDo) {
                 case ('View Products for Sale'):
