@@ -45,3 +45,6 @@ View Product Sales By Department:
 Create New Department:
 
 ![Bamazon Supervisor 3](/supervisor3.png)
+
+
+This project was created by Bethany Grogg as a project for UNH Full Stack Bootcamp.
