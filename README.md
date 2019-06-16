@@ -47,4 +47,6 @@ Create New Department:
 ![Bamazon Supervisor 3](/supervisor3.png)
 
 
+https://github.com/BethGrogg/Bamazon
+
 This project was created by Bethany Grogg as a project for UNH Full Stack Bootcamp.
